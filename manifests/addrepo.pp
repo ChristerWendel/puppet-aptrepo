@@ -23,17 +23,17 @@ define aptrepo::addrepo($location, $release = 'stable', $key = '') {
     group   => 'root',
     mode    => '0644',
     content => template('aptrepo/source.erb'),
-  } ~> Exec['apt-get']
+  } ~> Exec["apt-get ${location}"]
 
   if $key != '' {
-    exec { 'add_key':
+    exec { "add_key ${location}":
       command     => "/usr/bin/wget -q ${key} -O- | /usr/bin/apt-key add -",
       refreshonly => true,
       subscribe   => File[$title],
-    } ~> Exec['apt-get']
+    } ~> Exec["apt-get ${location}"]
   }
 
-  exec { 'apt-get':
+  exec { "apt-get ${location}":
     command     => '/usr/bin/apt-get update',
     refreshonly => true,
   }

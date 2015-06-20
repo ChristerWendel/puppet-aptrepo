@@ -17,12 +17,12 @@ describe 'aptrepo::addrepo', :type => :define do
         .with_owner('root')
         .with_group('root')
         .with_mode('0644')
-        .that_notifies('Exec[apt-get]')
+        .that_notifies('Exec[apt-get http://ftp.debian.org/debian]')
     }
 
     it { should_not contain_exec('add_key') }
 
-    it { should contain_exec('apt-get')
+    it { should contain_exec('apt-get http://ftp.debian.org/debian')
         .with_command('/usr/bin/apt-get update')
         .with_refreshonly(true)
     }
@@ -37,14 +37,14 @@ describe 'aptrepo::addrepo', :type => :define do
     end
 
     it { should contain_file('debian')
-        .that_notifies('Exec[add_key]')
+        .that_notifies('Exec[add_key http://ftp.debian.org/debian]')
     }
 
-    it { should contain_exec('add_key')
+    it { should contain_exec('add_key http://ftp.debian.org/debian')
         .with_command('/usr/bin/wget -q http://ftp.debian.org/debian-public.key -O- | /usr/bin/apt-key add -')
         .with_refreshonly(true)
         .that_subscribes_to('File[debian]')
-        .that_notifies('Exec[apt-get]')
+        .that_notifies('Exec[apt-get http://ftp.debian.org/debian]')
     }
   end
 
